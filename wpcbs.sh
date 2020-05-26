@@ -54,6 +54,7 @@ init () {
   EACH_WP_HOST=()
   EACH_WP_PREF=()
   EACH_WP_OURL=()
+  EACH_WP_SIZE=()
 
   ## Get current directory
   current_dir=$(pwd)/
@@ -129,15 +130,18 @@ wpConfigSearch () {
       EACH_WP_HOST+=("$(grep -oP "DB_HOST'\s*,\s*'\K.+(?=')" $each/wp-config.php)")
       EACH_WP_PREF+=("$(grep -oP "[\$]table_prefix\s*=\s*'\K.*(?=')" $each/wp-config.php)")
       EACH_WP_OURL+=("$(mysql -N -B -h${EACH_WP_HOST[$i]} -u${EACH_WP_USER[$i]} -p${EACH_WP_PASS[$i]} -e"SELECT option_value FROM ${EACH_WP_PREF[$i]}options WHERE option_name='siteurl';" ${EACH_WP_NAME[$i]} | sed -e 's/https*:\/\///g;s/\/$//g')")
+      EACH_WP_SIZE+=($(du -smh ${EACH_WP_LOC[$i]} | cut -f1))
       ((i=i+1))
     done
 
     ## List all installs found
     echo -e "Here are the locations of all the Wordpress installs found:"
     thisnum=1
+    i=0
     for each in "${EACH_WP_OURL[@]}"; do
-      echo $thisnum: $each
+      echo "$thisnum: $each     (Total:${EACH_WP_SIZE[$i]})"
       ((thisnum=thisnum+1))
+      ((i=i+1))
     done
 
     ## Go to question 2
