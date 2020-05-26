@@ -267,7 +267,6 @@ questionFour () {
 
     ## Check user's answer
     if [ "$ANS_CORE" == 1 ] || [ -z "$ANS_CORE" ]; then
-      #echo -e "Success"
       if [ "$ANS_CORE" == 1 ]; then
         WP_CORE=true
       else
