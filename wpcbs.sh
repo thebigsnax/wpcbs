@@ -1,7 +1,7 @@
 #!/bin/bash
 ##
 ###############################################################
-#### Welcome to the Wordpress Compressor Bash Script v1.0. ####
+#### Welcome to the Wordpress Compressor Bash Script v1.1  ####
 ###############################################################
 ##
 ## Creator: Greg Petersen https://github.com/thebigsnax/wpcbs
@@ -124,11 +124,11 @@ wpConfigSearch () {
     ## Scrape all WP installs for db info and url
     i=0
     for each in "${EACH_WP_LOC[@]}"; do
-      EACH_WP_NAME+=("$(grep -oP "DB_NAME'\s*,\s*'\K.+(?=')" $each/wp-config.php)")
-      EACH_WP_PASS+=("$(grep -oP "DB_PASSWORD'\s*,\s*'\K.+(?=')" $each/wp-config.php)")
-      EACH_WP_USER+=("$(grep -oP "DB_USER'\s*,\s*'\K.+(?=')" $each/wp-config.php)")
-      EACH_WP_HOST+=("$(grep -oP "DB_HOST'\s*,\s*'\K.+(?=')" $each/wp-config.php)")
-      EACH_WP_PREF+=("$(grep -oP "[\$]table_prefix\s*=\s*'\K.*(?=')" $each/wp-config.php)")
+      EACH_WP_NAME+=("$(grep -oP "^\s*define\(\s*'DB_NAME'\s*,\s*'\K.+(?=')" $each/wp-config.php)")
+      EACH_WP_PASS+=("$(grep -oP "^\s*define\(\s*'DB_PASSWORD'\s*,\s*'\K.+(?=')" $each/wp-config.php)")
+      EACH_WP_USER+=("$(grep -oP "^\s*define\(\s*'DB_USER'\s*,\s*'\K.+(?=')" $each/wp-config.php)")
+      EACH_WP_HOST+=("$(grep -oP "^\s*define\(\s*'DB_HOST'\s*,\s*'\K.+(?=')" $each/wp-config.php)")
+      EACH_WP_PREF+=("$(grep -oP "^\s*[\$]table_prefix\s*=\s*'\K.*(?=')" $each/wp-config.php)")
       EACH_WP_OURL+=("$(mysql -N -B -h${EACH_WP_HOST[$i]} -u${EACH_WP_USER[$i]} -p${EACH_WP_PASS[$i]} -e"SELECT option_value FROM ${EACH_WP_PREF[$i]}options WHERE option_name='siteurl';" ${EACH_WP_NAME[$i]} | sed -e 's/https*:\/\///g;s/\/$//g')")
       EACH_WP_SIZE+=($(du -smh ${EACH_WP_LOC[$i]} | cut -f1))
       ((i=i+1))
